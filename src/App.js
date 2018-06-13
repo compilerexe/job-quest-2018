@@ -22,7 +22,7 @@ class App extends Component {
         let v = response.data.value
 
         v.forEach(d => {
-          result.push(<Joke key={d.id} data={d.value}/>)
+          result.push(<Joke key={d.id} joke={d.joke}/>)
         })
 
         this.setState({jokes: result})
