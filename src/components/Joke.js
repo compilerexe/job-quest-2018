@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import dislike from '../images/dislike.svg'
 
 export default class Joke extends Component {
 
@@ -24,11 +25,12 @@ export default class Joke extends Component {
             {/*{ this.props.joke }*/}
           {/*</div>*/}
           <div className="card-footer">
-            <button className="btn btn-primary" style={styles.btnLike}>
-              <i className="icon icon-emoji"/> Like
+            <button className="btn btn-success" style={styles.btnLike}>
+              <i className="icon icon-emoji"/> { (Math.random() * 1000).toFixed(0) }
             </button>
-            <button className="btn btn-primary">
-              <i className="icon icon-cross"/> Not pass
+            <button className="btn btn-error">
+              <i className="icon icon-flag"/>&nbsp;
+              { (Math.random() * 1000).toFixed(0) }
             </button>
           </div>
         </div>

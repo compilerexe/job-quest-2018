@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
 import Footer from './components/Footer.jsx'
-import loading from './loading.svg'
+import loading from './images/loading.svg'
 
 const axios = require('axios')
 
