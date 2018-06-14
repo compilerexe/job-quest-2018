@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
+import LazyLoad from 'react-lazyload'
 import Footer from './components/Footer.jsx'
 
 const axios = require('axios')
 
 let firstName = 'Prayut'
 let lastName = ''
-let resultJokes = 20
+let resultJokes = 50
 
 class App extends Component {
 
@@ -19,22 +20,25 @@ class App extends Component {
     }
   }
 
+  async asyncAPI () {
+    const res = await axios(`http://api.icndb.com/jokes/random/${resultJokes}?firstName=${firstName}&lastName=${lastName}`)
+    return await res
+  }
+
   fetchData () {
-
-    (this.state.jokes.length > 0) && this.setState({jokes: []})
-
-    let result = []
-
-    axios.get(`http://api.icndb.com/jokes/random/${resultJokes}?firstName=${firstName}&lastName=${lastName}`)
-      .then(response => {
-        let v = response.data.value
-
-        v.forEach(d => {
-          result.push(<Joke key={d.id} joke={d.joke}/>)
-        })
-
-        this.setState({jokes: result})
+    this.asyncAPI().then(response => {
+      (this.state.jokes.length > 0) && this.setState({jokes: []})
+      let result = []
+      let v = response.data.value
+      v.forEach(d => {
+        result.push(
+          <LazyLoad key={d.id} height={100}>
+            <Joke joke={d.joke}/>
+          </LazyLoad>
+        )
       })
+      this.setState({jokes: result})
+    })
   }
 
   onSubmit (e) {
@@ -49,9 +53,7 @@ class App extends Component {
   render () {
 
     const AppLoading = () => (
-      <div className="columns fixed centered" style={{top: '50%', left: '50%'}}>
-        <div className="loading loading-lg"/>
-      </div>
+      <div className="loading fixed loading-lg" style={{top: '50%', left: '50%'}}/>
     )
 
     const Content = () => (
@@ -75,30 +77,29 @@ class App extends Component {
           </div>
           <div className="column col-2 col-xs-6">
             <div className="form-group">
-              <select className="form-select" onChange={e => resultJokes = e.target.value}>
-                <option value="20">20 ~ jokes</option>
+              <select className="form-select" defaultValue={resultJokes} onChange={e => resultJokes = e.target.value}>
                 <option value="50">50 ~ jokes</option>
                 <option value="100">100 ~ jokes</option>
-                <option>more then 100</option>
+                <option value="1000">more then 100</option>
               </select>
             </div>
           </div>
           <div className="column col-2 col-xs-6">
-            <button type="button" className="btn btn-primary" style={{width: '100%'}} onClick={e => this.onSubmit(e)}>Random</button>
+            <button type="button" className="btn btn-primary" style={{width: '100%'}}
+                    onClick={e => this.onSubmit(e)}>Random
+            </button>
           </div>
         </div>
 
-        <div className="columns">
-          {this.state.jokes.map(joke => joke)}
-        </div>
-
-        <Footer/>
+        {(this.state.jokes.length <= 0) && <AppLoading/>}
+        {this.state.jokes.map(joke => joke)}
+        {(this.state.jokes.length > 0) && <Footer/>}
       </div>
     )
 
     return (
       <div className="container grid-lg">
-        {(this.state.jokes.length <= 0) ? <AppLoading/> : <Content/>}
+        <Content/>
       </div>
     )
   }

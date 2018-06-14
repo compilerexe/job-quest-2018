@@ -14,22 +14,18 @@ export default class Joke extends Component {
     }
 
     return (
-      <div className="column col-12" style={styles.column}>
+      <div className="form-group" style={styles.column}>
         <div className="card">
           <div className="card-header">
-            <div className="card-title h5">{ this.props.joke }</div>
-            {/*<div className="card-subtitle text-gray">...</div>*/}
+            <div className="card-title h5">{this.props.joke}</div>
           </div>
-          {/*<div className="card-body">*/}
-            {/*{ this.props.joke }*/}
-          {/*</div>*/}
           <div className="card-footer">
             <button className="btn btn-success" style={styles.btnLike}>
-              <i className="icon icon-emoji"/> { (Math.random() * 1000).toFixed(0) }
+              <i className="icon icon-emoji"/> {(Math.random() * 1000).toFixed(0)}
             </button>
             <button className="btn btn-error">
               <i className="icon icon-flag"/>&nbsp;
-              { (Math.random() * 1000).toFixed(0) }
+              {(Math.random() * 1000).toFixed(0)}
             </button>
           </div>
         </div>
