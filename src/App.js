@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
 import Footer from './components/Footer.jsx'
+import loading from './loading.svg'
 
 const axios = require('axios')
 
@@ -32,9 +33,17 @@ class App extends Component {
   }
 
   render () {
-    return (
-      <div className='container grid-lg'>
 
+    const AppLoading = () => (
+      <div className="columns centered">
+        <div className="column col-12 text-center">
+          <img src={loading} className="App-loading" alt="loading"/>
+        </div>
+      </div>
+    )
+
+    const Content = () => (
+      <div>
         <Navbar/>
 
         <div className="columns">
@@ -51,12 +60,16 @@ class App extends Component {
         </div>
 
         <div className="columns">
-
           {this.state.jokes.map(joke => joke)}
-
         </div>
 
         <Footer/>
+      </div>
+    )
+
+    return (
+      <div className="container grid-lg">
+        { (this.state.jokes.length <= 0) ? <AppLoading/> : <Content/> }
       </div>
     )
   }
