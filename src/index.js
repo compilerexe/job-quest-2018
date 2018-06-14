@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './App.css'
 import './index.css';
 // import './style.scss'
 import 'spectre.css/dist/spectre.min.css'

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 export default () => (
   <div className='text-center' style={{ marginTop: '15px' }}>

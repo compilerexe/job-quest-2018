@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import dislike from '../images/dislike.svg'
 
 export default class Joke extends Component {
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
 import Footer from './components/Footer.jsx'
-import loading from './images/loading.svg'
 
 const axios = require('axios')
 
@@ -19,7 +18,7 @@ class App extends Component {
   componentDidMount () {
     let result = []
 
-    axios.get('http://api.icndb.com/jokes/random/20?firstName=John&amp;lastName=Doe')
+    axios.get('http://api.icndb.com/jokes/random/20?firstName=Prayut&lastName=')
       .then(response => {
         let v = response.data.value
 
@@ -35,10 +34,8 @@ class App extends Component {
   render () {
 
     const AppLoading = () => (
-      <div className="columns centered">
-        <div className="column col-12 text-center">
-          <img src={loading} className="App-loading" alt="loading"/>
-        </div>
+      <div className="columns fixed centered" style={{ top: '50%', left: '50%'}}>
+        <div className="loading loading-lg"/>
       </div>
     )
 
@@ -47,7 +44,17 @@ class App extends Component {
         <Navbar/>
 
         <div className="columns">
-          <div className="column col-2 col-ml-auto">
+          <div className="column col-2 col-xs-6">
+            <div className="form-group">
+              <input type="text" className="form-input" placeholder="First name"/>
+            </div>
+          </div>
+          <div className="column col-2 col-xs-6">
+            <div className="form-group">
+              <input type="text" className="form-input" placeholder="Last name"/>
+            </div>
+          </div>
+          <div className="column col-2 col-xs-6">
             <div className="form-group">
               <select className="form-select">
                 <option>20 ~ jokes</option>
@@ -56,6 +63,9 @@ class App extends Component {
                 <option>more then 100</option>
               </select>
             </div>
+          </div>
+          <div className="column col-2 col-xs-6">
+            <button type="button" className="btn btn-primary" style={{width: '100%'}}>Random</button>
           </div>
         </div>
 
@@ -69,7 +79,7 @@ class App extends Component {
 
     return (
       <div className="container grid-lg">
-        { (this.state.jokes.length <= 0) ? <AppLoading/> : <Content/> }
+        {(this.state.jokes.length <= 0) ? <AppLoading/> : <Content/>}
       </div>
     )
   }
