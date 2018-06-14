@@ -14,22 +14,22 @@ export default class Joke extends Component {
     }
 
     return (
-      <div className="form-group" style={styles.column}>
+      <article className="form-group" style={styles.column} role="article">
         <div className="card">
           <div className="card-header">
             <div className="card-title h5">{this.props.joke}</div>
           </div>
           <div className="card-footer">
-            <button className="btn btn-success" style={styles.btnLike}>
+            <button type="button" className="btn btn-success" style={styles.btnLike}>
               <i className="icon icon-emoji"/> {(Math.random() * 1000).toFixed(0)}
             </button>
-            <button className="btn btn-error">
+            <button type="button" className="btn btn-error">
               <i className="icon icon-flag"/>&nbsp;
               {(Math.random() * 1000).toFixed(0)}
             </button>
           </div>
         </div>
-      </div>
+      </article>
     )
   }
 
