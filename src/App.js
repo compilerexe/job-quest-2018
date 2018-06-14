@@ -33,7 +33,7 @@ class App extends Component {
       v.forEach(d => {
         result.push(
           <LazyLoad key={d.id} height={100}>
-            <Joke joke={d.joke}/>
+            <Joke id={d.id} joke={d.joke}/>
           </LazyLoad>
         )
       })
