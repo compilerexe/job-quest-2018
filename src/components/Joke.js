@@ -1,137 +1,86 @@
 import React, { Component } from 'react'
-import database from '../Firebase'
-
-const axios = require('axios')
 
 let permissionLike = false
 let permissionDislike = false
-let ip, refIP, ref
-let initLog = false
-let snapshotLog
 
 export default class Joke extends Component {
 
   constructor (props) {
     super(props)
-    this.joke_id = props.id
-    this.state = {like: 0, dislike: 0}
+    this.data = props.data
   }
 
   firebaseStore (action) {
 
-    refIP.once('value', snapshot => {
-      if (snapshot.val() === null) {
-        initLog = true
-      } else {
-        snapshotLog = snapshot
-        initLog = false
-      }
-    }).then(() => {
-      // console.log('begin process')
+    if (action === 'like') {
+      this.data.refIP.update({like: !this.data.log.like, dislike: false})
+    } else {
+      this.data.refIP.update({dislike: !this.data.log.dislike, like: false})
+    }
 
-      // ===== process 1 =====
-      if (initLog === false) {
+    if (action === 'like') {
 
-        if (action === 'like') {
-          permissionLike = !snapshotLog.val().like
-          refIP.update({like: !snapshotLog.val().like, dislike: false})
-        } else {
-          permissionDislike = !snapshotLog.val().dislike
-          refIP.update({dislike: !snapshotLog.val().dislike, like: false})
+      let snapLike = this.data.like
+      let snapDislike = this.data.dislike
+
+      if (snapLike === 0) {
+        snapLike++
+        if (snapDislike > 0) {
+          snapDislike--
         }
-
       } else {
-        /* ===== create log ===== */
-        refIP.set({
-          like: (action === 'like'),
-          dislike: (action === 'dislike')
-        })
-
-        if (action === 'like') {
-          permissionLike = true
-        } else {
-          permissionDislike = true
-        }
-        /* ===== end create log ===== */
+        snapLike--
       }
 
-      // ===== process 2 =====
-      ref.once('value', snapshot => {
-        if (snapshot.val() !== null) {
+      this.data.refJoke.update({like: snapLike, dislike: snapDislike})
+      this.data = {...this.data, like: snapLike, dislike: snapDislike}
+      this.forceUpdate()
 
-          if (action === 'like') {
+    } else {
 
-            let snapLike = snapshot.val().like
-            let snapDislike = snapshot.val().dislike
+      let snapLike = this.data.like
+      let snapDislike = this.data.dislike
 
-            if (permissionLike) {
-              snapLike++
-              if (snapDislike > 0) {
-                snapDislike--
-              }
-            } else {
-              snapLike--
-            }
-
-            ref.update({like: snapLike, dislike: snapDislike})
-            this.setState({like: snapLike, dislike: snapDislike})
-
-          } else {
-
-            let snapLike = snapshot.val().like
-            let snapDislike = snapshot.val().dislike
-
-            if (permissionDislike) {
-              snapDislike++
-              if (snapLike > 0) {
-                snapLike--
-              }
-            } else {
-              snapDislike--
-            }
-
-            ref.update({dislike: snapDislike, like: snapLike})
-            this.setState({dislike: snapDislike, like: snapLike})
-
-          }
-
-        } else {
-          // init joke data
-          ref.set({
-            like: (permissionLike) ? 1 : 0,
-            dislike: (permissionDislike) ? 1 : 0
-          })
-
-          if (permissionLike) this.setState({like: 1})
-          if (permissionDislike) this.setState({dislike: 1})
+      if (snapDislike === 0) {
+        snapDislike++
+        if (snapLike > 0) {
+          snapLike--
         }
-      }) // end ref
+      } else {
+        snapDislike--
+      }
 
-    }) // end then() refIP
+      this.data.refJoke.update({dislike: snapDislike, like: snapLike})
+      this.data = {...this.data, like: snapLike, dislike: snapDislike}
+      this.forceUpdate()
+    }
 
-    // console.log('process completed')
   }
 
   onPressButton (e, action) {
     e.preventDefault()
-
-    axios.get('https://jsonip.com').then(response => {
-      ip = (response.data.ip).replace(/[.:]/g, '-')
-      refIP = database.ref(`/job-quest-2018/logs/${ip}/${this.joke_id}`)
-      ref = database.ref(`/job-quest-2018/jokes/${this.joke_id}`)
-      this.firebaseStore(action)
-    }).catch(function (err) {
-      console.log(err)
-      return err
-    }) // end axios
-
+    console.log('onPresss ' + this.data.joke_id)
+    this.firebaseStore(action)
   }
 
-  componentWillMount () {
-    let then = this
-    database.ref(`/job-quest-2018/jokes/${this.joke_id}`).on('value', snapshot => {
-      (snapshot.val() !== null) && then.setState({like: snapshot.val().like})
-    })
+  // shouldComponentUpdate (nextProps, nextState) {
+  //
+  //   let shouldUpdate = false
+  //
+  //   console.log(`old state : ${this.data.joke_id}`, this.data)
+  //   console.log(`new state : ${this.data.joke_id}`, nextState)
+  //
+  //   if (nextState !== this.data) {
+  //     console.log(`old state : ${this.data.joke_id}`, this.data)
+  //     console.log(`new state : ${this.data.joke_id}`, nextState)
+  //     shouldUpdate = true
+  //   }
+  //
+  //   return shouldUpdate
+  // }
+
+  componentDidMount () {
+    console.log(`componentDidMount >>>> ${this.data.joke_id}`)
   }
 
   render () {
@@ -145,16 +94,17 @@ export default class Joke extends Component {
       <article className="form-group" style={styles.column}>
         <div className="card">
           <div className="card-header">
-            <div className="card-title h5">{this.props.joke}</div>
+            <div className="card-title h5">{this.data.joke}</div>
           </div>
           <div className="card-footer">
             <button type="button" className="btn btn-success" style={styles.btnLike}
                     onClick={e => this.onPressButton(e, 'like')}>
-              <i className="icon icon-emoji"/> {this.state.like}
+              <i className="icon icon-emoji"/> {this.data.like}
             </button>
-            <button type="button" className="btn btn-error" onClick={e => this.onPressButton(e, 'dislike')}>
+            <button type="button" className="btn btn-error"
+                    onClick={e => this.onPressButton(e, 'dislike')}>
               <i className="icon icon-flag"/>&nbsp;
-              {this.state.dislike}
+              {this.data.dislike}
             </button>
           </div>
         </div>

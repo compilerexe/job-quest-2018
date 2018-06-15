@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import database from './Firebase'
+
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
 import LazyLoad from 'react-lazyload'
@@ -8,7 +10,8 @@ const axios = require('axios')
 
 let firstName = 'Prayut'
 let lastName = ''
-let resultJokes = 50
+let resultJokes = 2
+let ip
 
 class App extends Component {
 
@@ -31,9 +34,59 @@ class App extends Component {
       let result = []
       let v = response.data.value
       v.forEach(d => {
+        let joke_id = d.id
+        let refIP = database.ref(`/job-quest-2018/logs/${ip}/${joke_id}`)
+        let refJoke = database.ref(`/job-quest-2018/jokes/${joke_id}`)
+
+        let data = {
+          joke_id: d.id,
+          joke: d.joke,
+          refIP: refIP,
+          refJoke: refJoke,
+          like: 0,
+          dislike: 0,
+          log: {
+            like: false,
+            dislike: false
+          }
+        }
+
+        /* >>>>>>>>> init log */
+        let initLog = false
+        refIP.once('value', snapshot => {
+          if (snapshot.val() === null) {
+            initLog = true
+          } else {
+            data.log = {
+              like: snapshot.val().like,
+              dislike: snapshot.val().dislike
+            }
+          }
+        }).then(() => {
+          if (initLog) {
+            refIP.set({
+              like: 0,
+              dislike: 0
+            })
+            refJoke.set({
+              like: 0,
+              dislike: 0
+            })
+          } else {
+            refJoke.once('value', snapshot => {
+              data = {
+                ...data,
+                like: snapshot.val().like,
+                dislike: snapshot.val().dislike
+              }
+            })
+          }
+        })
+        /* >>>>>>>>> end init log */
+
         result.push(
-          <LazyLoad key={d.id} height={100}>
-            <Joke id={d.id} joke={d.joke}/>
+          <LazyLoad key={joke_id} height={100}>
+            <Joke data={data}/>
           </LazyLoad>
         )
       })
@@ -47,7 +100,13 @@ class App extends Component {
   }
 
   componentDidMount () {
-    this.fetchData()
+    axios.get('https://jsonip.com').then(response => {
+      ip = (response.data.ip).replace(/[.:]/g, '-')
+      this.fetchData()
+    }).catch(function (err) {
+      console.log(err)
+      return err
+    })
   }
 
   render () {
@@ -80,11 +139,12 @@ class App extends Component {
           <div className="column col-2 col-xs-6">
             <div className="form-group">
               <label htmlFor="result-jokes" className="form-label">Result</label>
-                <select className="form-select" id="result-jokes" defaultValue={resultJokes} onChange={e => resultJokes = e.target.value}>
-                  <option value="50">50 ~ jokes</option>
-                  <option value="100">100 ~ jokes</option>
-                  <option value="1000">more then 100</option>
-                </select>
+              <select className="form-select" id="result-jokes" defaultValue={resultJokes}
+                      onChange={e => resultJokes = e.target.value}>
+                <option value="50">50 ~ jokes</option>
+                <option value="100">100 ~ jokes</option>
+                <option value="1000">more then 100</option>
+              </select>
             </div>
           </div>
           <div className="column col-2 col-xs-6">
