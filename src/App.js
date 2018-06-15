@@ -27,7 +27,7 @@ class App extends Component {
   }
 
   async asyncAPI () {
-    const res = await axios(`http://api.icndb.com/jokes/random/${this.resultJokes}?firstName=${this.firstName}&lastName=${this.lastName}`)
+    const res = await axios(`https://api.icndb.com/jokes/random/${this.resultJokes}?firstName=${this.firstName}&lastName=${this.lastName}`)
     return await res
   }
 
