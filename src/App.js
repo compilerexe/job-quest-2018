@@ -13,6 +13,14 @@ let lastName = ''
 let resultJokes = 50
 let ip
 
+/* =====  Firebase Realtime Database Config ===== */
+
+// Change your firebase initializeApp in Firebase.js file.
+
+const firebaseEnabled = true // Change to false if your don't want this feature.
+
+/* ============================================== */
+
 class App extends Component {
 
   constructor (props) {
@@ -88,7 +96,7 @@ class App extends Component {
 
         result.push(
           <LazyLoad key={joke_id} height={100}>
-            <Joke data={data}/>
+            <Joke data={data} firebaseEnabled={firebaseEnabled}/>
           </LazyLoad>
         )
       })
@@ -102,13 +110,17 @@ class App extends Component {
   }
 
   componentWillMount () {
-    axios.get('https://jsonip.com').then(response => {
-      ip = (response.data.ip).replace(/[.:]/g, '-')
+    if (firebaseEnabled) {
+      axios.get('https://jsonip.com').then(response => {
+        ip = (response.data.ip).replace(/[.:]/g, '-')
+        this.fetchData()
+      }).catch(function (err) {
+        console.log(err)
+        return err
+      })
+    } else {
       this.fetchData()
-    }).catch(function (err) {
-      console.log(err)
-      return err
-    })
+    }
   }
 
   render () {

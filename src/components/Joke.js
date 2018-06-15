@@ -71,23 +71,29 @@ export default class Joke extends Component {
       btnLike: {marginRight: '10px'}
     }
 
+    const CardFooter = () => (
+      <div className="card-footer">
+        <button type="button" className="btn btn-success" style={styles.btnLike}
+                onClick={e => this.onPressButton(e, 'like')}>
+          <i className="icon icon-emoji"/> {this.data.like}
+        </button>
+        <button type="button" className="btn btn-error"
+                onClick={e => this.onPressButton(e, 'dislike')}>
+          <i className="icon icon-flag"/>&nbsp;
+          {this.data.dislike}
+        </button>
+      </div>
+    )
+
     return (
       <article className="form-group" style={styles.column}>
         <div className="card">
           <div className="card-header">
             <div className="card-title h5">{this.data.joke}</div>
           </div>
-          <div className="card-footer">
-            <button type="button" className="btn btn-success" style={styles.btnLike}
-                    onClick={e => this.onPressButton(e, 'like')}>
-              <i className="icon icon-emoji"/> {this.data.like}
-            </button>
-            <button type="button" className="btn btn-error"
-                    onClick={e => this.onPressButton(e, 'dislike')}>
-              <i className="icon icon-flag"/>&nbsp;
-              {this.data.dislike}
-            </button>
-          </div>
+
+          {(this.props.firebaseEnabled) && <CardFooter/>}
+
         </div>
       </article>
     )
