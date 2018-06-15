@@ -60,22 +60,6 @@ export default class Joke extends Component {
     this.firebaseStore(action)
   }
 
-  // shouldComponentUpdate (nextProps, nextState) {
-  //
-  //   let shouldUpdate = false
-  //
-  //   console.log(`old state : ${this.data.joke_id}`, this.data)
-  //   console.log(`new state : ${this.data.joke_id}`, nextState)
-  //
-  //   if (nextState !== this.data) {
-  //     console.log(`old state : ${this.data.joke_id}`, this.data)
-  //     console.log(`new state : ${this.data.joke_id}`, nextState)
-  //     shouldUpdate = true
-  //   }
-  //
-  //   return shouldUpdate
-  // }
-
   componentDidMount () {
     console.log(`componentDidMount >>>> ${this.data.joke_id}`)
   }
