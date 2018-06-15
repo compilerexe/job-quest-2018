@@ -10,28 +10,24 @@ import Footer from './components/Footer.jsx'
 
 const axios = require('axios')
 
-let firstName = 'Prayut'
-let lastName = ''
-let resultJokes = 50
-let ip
-
 /* =====  Firebase Realtime Database Config ===== */
-
 // Change your firebase initializeApp in Firebase.js file.
-
 const firebaseEnabled = true // Change to false if your don't want this feature.
-
 /* ============================================== */
 
 class App extends Component {
 
   constructor (props) {
     super(props)
+    this.firstName = props.firstName
+    this.lastName = props.lastName
+    this.resultJokes = props.resultJokes
     this.jokes = props.jokes
+    this.ip = props.ip
   }
 
   async asyncAPI () {
-    const res = await axios(`http://api.icndb.com/jokes/random/${resultJokes}?firstName=${firstName}&lastName=${lastName}`)
+    const res = await axios(`http://api.icndb.com/jokes/random/${this.resultJokes}?firstName=${this.firstName}&lastName=${this.lastName}`)
     return await res
   }
 
@@ -45,7 +41,7 @@ class App extends Component {
 
       v.forEach(d => {
         let joke_id = d.id
-        let refIP = database.ref(`/job-quest-2018/logs/${ip}/${joke_id}`)
+        let refIP = database.ref(`/job-quest-2018/logs/${this.ip}/${joke_id}`)
         let refJoke = database.ref(`/job-quest-2018/jokes/${joke_id}`)
 
         let data = {
@@ -112,19 +108,35 @@ class App extends Component {
 
   onSubmit (e) {
     e.preventDefault()
+    store.dispatch({
+      type: actionTypes.SET_NAME,
+      data: {
+        firstName: this.firstName,
+        lastName: this.lastName
+      }
+    })
     this.fetchData()
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (nextProps.jokes.length !== this.jokes.length) {
       this.jokes = nextProps.jokes
+    }
+
+    if (nextProps.ip !== this.ip) {
+      this.ip = nextProps.ip
     }
   }
 
   componentWillMount () {
     if (firebaseEnabled) {
       axios.get('https://jsonip.com').then(response => {
-        ip = (response.data.ip).replace(/[.:]/g, '-')
+        store.dispatch({
+          type: actionTypes.SET_IP,
+          data: {
+            ip: (response.data.ip).replace(/[.:]/g, '-')
+          }
+        })
         this.fetchData()
       }).catch(function (err) {
         console.log(err)
@@ -150,23 +162,23 @@ class App extends Component {
             <div className="form-group">
               <label htmlFor="first-name" className="form-label">First name</label>
               <input type="text" className="form-input" id="first-name" placeholder="First name"
-                     defaultValue={firstName}
-                     onChange={e => firstName = e.target.value}/>
+                     defaultValue={this.firstName}
+                     onChange={e => this.firstName = e.target.value}/>
             </div>
           </div>
           <div className="column col-2 col-xs-6">
             <div className="form-group">
               <label htmlFor="last-name" className="form-label">Last name</label>
               <input type="text" className="form-input" id="last-name" placeholder="Last name"
-                     defaultValue={lastName}
-                     onChange={e => lastName = e.target.value}/>
+                     defaultValue={this.lastName}
+                     onChange={e => this.lastName = e.target.value}/>
             </div>
           </div>
           <div className="column col-2 col-xs-6">
             <div className="form-group">
               <label htmlFor="result-jokes" className="form-label">Result</label>
-              <select className="form-select" id="result-jokes" defaultValue={resultJokes}
-                      onChange={e => resultJokes = e.target.value}>
+              <select className="form-select" id="result-jokes" defaultValue={this.resultJokes}
+                      onChange={e => this.resultJokes = e.target.value}>
                 <option value="50">50 ~ jokes</option>
                 <option value="100">100 ~ jokes</option>
                 <option value="1000">more then 100</option>
@@ -199,7 +211,11 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    jokes: state.jokes
+    jokes: state.jokes,
+    firstName: state.firstName,
+    lastName: state.lastName,
+    resultJokes: state.resultJokes,
+    ip: state.ip
   }
 }
 
