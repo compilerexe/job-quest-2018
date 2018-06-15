@@ -10,7 +10,7 @@ const axios = require('axios')
 
 let firstName = 'Prayut'
 let lastName = ''
-let resultJokes = 2
+let resultJokes = 50
 let ip
 
 class App extends Component {

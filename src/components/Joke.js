@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
 
-let permissionLike = false
-let permissionDislike = false
-
 export default class Joke extends Component {
 
   constructor (props) {
