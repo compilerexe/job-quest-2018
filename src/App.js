@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import actionTypes from './redux/actions'
+import { connect } from 'react-redux'
+import store from './redux/store'
 import database from './Firebase'
-
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
 import LazyLoad from 'react-lazyload'
@@ -25,10 +27,7 @@ class App extends Component {
 
   constructor (props) {
     super(props)
-
-    this.state = {
-      jokes: []
-    }
+    this.jokes = props.jokes
   }
 
   async asyncAPI () {
@@ -38,7 +37,9 @@ class App extends Component {
 
   fetchData () {
     this.asyncAPI().then(response => {
-      (this.state.jokes.length > 0) && this.setState({jokes: []})
+
+      (this.jokes.length > 0) && store.dispatch({type: actionTypes.CLEAR_DATA_JOKES})
+
       let result = []
       let v = response.data.value
 
@@ -100,13 +101,24 @@ class App extends Component {
           </LazyLoad>
         )
       })
-      this.setState({jokes: result})
+
+      store.dispatch({
+        type: actionTypes.GET_DATA_JOKES,
+        data: result
+      })
+
     })
   }
 
   onSubmit (e) {
     e.preventDefault()
     this.fetchData()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.jokes.length !== this.jokes.length) {
+      this.jokes = nextProps.jokes
+    }
   }
 
   componentWillMount () {
@@ -171,9 +183,9 @@ class App extends Component {
           </div>
         </header>
 
-        {(this.state.jokes.length <= 0) && <AppLoading/>}
-        {this.state.jokes.map(joke => joke)}
-        {(this.state.jokes.length > 0) && <Footer/>}
+        {(this.jokes.length <= 0) && <AppLoading/>}
+        {this.jokes.map(joke => joke)}
+        {(this.jokes.length > 0) && <Footer/>}
       </main>
     )
 
@@ -185,4 +197,10 @@ class App extends Component {
   }
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return {
+    jokes: state.jokes
+  }
+}
+
+export default connect(mapStateToProps)(App)
