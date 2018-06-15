@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import styled from 'styled-components'
 
 export default class Joke extends Component {
 
@@ -72,7 +73,7 @@ export default class Joke extends Component {
     }
 
     const CardFooter = () => (
-      <div className="card-footer">
+      <StyledBgColor className="card-footer">
         <button type="button" className="btn btn-success" style={styles.btnLike}
                 onClick={e => this.onPressButton(e, 'like')}>
           <i className="icon icon-emoji"/> {this.data.like}
@@ -82,21 +83,29 @@ export default class Joke extends Component {
           <i className="icon icon-flag"/>&nbsp;
           {this.data.dislike}
         </button>
-      </div>
+      </StyledBgColor>
     )
 
-    return (
+    const Joke = () => (
       <article className="form-group" style={styles.column}>
         <div className="card">
-          <div className="card-header">
+
+          <StyledBgColor className="card-header">
             <div className="card-title h5">{this.data.joke}</div>
-          </div>
+          </StyledBgColor>
 
           {(this.props.firebaseEnabled) && <CardFooter/>}
 
         </div>
       </article>
     )
+
+    const StyledBgColor = styled.div`
+      background: linear-gradient(to right, #b4d0fd, #c2e9fb);
+      box-shadow: 4px 4px #888888;
+    `
+
+    return <Joke/>
   }
 
 }
