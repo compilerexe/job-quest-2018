@@ -40,8 +40,6 @@ export default class Joke extends Component {
           refIP.update({dislike: !snapshotLog.val().dislike, like: false})
         }
 
-        console.log(permissionLike)
-
       } else {
         /* ===== create log ===== */
         refIP.set({
