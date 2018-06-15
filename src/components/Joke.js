@@ -3,57 +3,130 @@ import database from '../Firebase'
 
 const axios = require('axios')
 
+let permissionLike = false
+let permissionDislike = false
+let ip, refIP, ref
+let initLog = false
+let snapshotLog
+
 export default class Joke extends Component {
 
   constructor (props) {
     super(props)
     this.joke_id = props.id
-    this.state = {like: 0}
+    this.state = {like: 0, dislike: 0}
   }
 
-  pressLike (e) {
-    e.preventDefault()
-    let approveLike = false
+  firebaseStore (action) {
 
-    axios.get('https://jsonip.com').then(response => {
-      let ip = (response.data.ip).replace(/:/g, '-')
+    refIP.once('value', snapshot => {
+      if (snapshot.val() === null) {
+        initLog = true
+      } else {
+        snapshotLog = snapshot
+        initLog = false
+      }
+    }).then(() => {
+      // console.log('begin process')
 
-      let refIP = database.ref(`/job-quest-2018/logs/${ip}/${this.joke_id}`)
-      let ref = database.ref(`/job-quest-2018/jokes/${this.joke_id}`)
+      // ===== process 1 =====
+      if (initLog === false) {
 
-      refIP.once('value', snapshot => {
-        if (snapshot.val() !== null) {
-          approveLike = !snapshot.val().like
-          refIP.update({like: !snapshot.val().like})
+        if (action === 'like') {
+          permissionLike = !snapshotLog.val().like
+          refIP.update({like: !snapshotLog.val().like, dislike: false})
         } else {
-          // init user log
-          refIP.set({
-            like: true,
-            dislike: false
-          })
-          approveLike = true
+          permissionDislike = !snapshotLog.val().dislike
+          refIP.update({dislike: !snapshotLog.val().dislike, like: false})
         }
-      }).then(() => {
-        ref.once('value', snapshot => {
-          if (snapshot.val() !== null) {
-            let v = snapshot.val().like
 
-            if (approveLike) {
-              ref.update({like: ++v})
+        console.log(permissionLike)
+
+      } else {
+        /* ===== create log ===== */
+        refIP.set({
+          like: (action === 'like'),
+          dislike: (action === 'dislike')
+        })
+
+        if (action === 'like') {
+          permissionLike = true
+        } else {
+          permissionDislike = true
+        }
+        /* ===== end create log ===== */
+      }
+
+      // ===== process 2 =====
+      ref.once('value', snapshot => {
+        if (snapshot.val() !== null) {
+
+          if (action === 'like') {
+
+            let snapLike = snapshot.val().like
+            let snapDislike = snapshot.val().dislike
+
+            if (permissionLike) {
+              snapLike++
+              if (snapDislike > 0) {
+                snapDislike--
+              }
             } else {
-              ref.update({like: --v})
+              snapLike--
             }
 
+            ref.update({like: snapLike, dislike: snapDislike})
+            this.setState({like: snapLike, dislike: snapDislike})
+
           } else {
-            // init joke data
-            ref.set({
-              like: 1,
-              dislike: 0
-            })
+
+            let snapLike = snapshot.val().like
+            let snapDislike = snapshot.val().dislike
+
+            if (permissionDislike) {
+              snapDislike++
+              if (snapLike > 0) {
+                snapLike--
+              }
+            } else {
+              snapDislike--
+            }
+
+            ref.update({dislike: snapDislike, like: snapLike})
+            this.setState({dislike: snapDislike, like: snapLike})
+
           }
-        }) // end ref
-      }) // end refIP
+
+        } else {
+          // init joke data
+          ref.set({
+            like: (permissionLike) ? 1 : 0,
+            dislike: (permissionDislike) ? 1 : 0
+          })
+
+          if (permissionLike) this.setState({like: 1})
+          if (permissionDislike) this.setState({dislike: 1})
+        }
+      }) // end ref
+
+    }) // end then() refIP
+
+    // console.log('process completed')
+  }
+
+  onPressButton (e, action) {
+    e.preventDefault()
+
+    axios.get('https://jsonip.com').then(response => {
+      ip = (response.data.ip).replace(/[.:]/g, '-')
+      refIP = database.ref(`/job-quest-2018/logs/${ip}/${this.joke_id}`)
+      ref = database.ref(`/job-quest-2018/jokes/${this.joke_id}`)
+      this.firebaseStore(action)
+    }).catch(function (err) {
+      console.log(err)
+      return err
     }) // end axios
+
   }
 
   componentWillMount () {
@@ -77,12 +150,13 @@ export default class Joke extends Component {
             <div className="card-title h5">{this.props.joke}</div>
           </div>
           <div className="card-footer">
-            <button type="button" className="btn btn-success" style={styles.btnLike} onClick={e => this.pressLike(e)}>
+            <button type="button" className="btn btn-success" style={styles.btnLike}
+                    onClick={e => this.onPressButton(e, 'like')}>
               <i className="icon icon-emoji"/> {this.state.like}
             </button>
-            <button type="button" className="btn btn-error">
+            <button type="button" className="btn btn-error" onClick={e => this.onPressButton(e, 'dislike')}>
               <i className="icon icon-flag"/>&nbsp;
-              {(Math.random() * 1000).toFixed(0)}
+              {this.state.dislike}
             </button>
           </div>
         </div>
