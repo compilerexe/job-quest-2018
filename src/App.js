@@ -33,6 +33,7 @@ class App extends Component {
       (this.state.jokes.length > 0) && this.setState({jokes: []})
       let result = []
       let v = response.data.value
+
       v.forEach(d => {
         let joke_id = d.id
         let refIP = database.ref(`/job-quest-2018/logs/${ip}/${joke_id}`)
@@ -81,6 +82,7 @@ class App extends Component {
               }
             })
           }
+
         })
         /* >>>>>>>>> end init log */
 
@@ -99,7 +101,7 @@ class App extends Component {
     this.fetchData()
   }
 
-  componentDidMount () {
+  componentWillMount () {
     axios.get('https://jsonip.com').then(response => {
       ip = (response.data.ip).replace(/[.:]/g, '-')
       this.fetchData()
