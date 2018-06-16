@@ -89,13 +89,10 @@ export default class JokeActions extends Component {
     const JokeActions = () => (
       <article className="form-group" style={styles.column}>
         <div className="card">
-
           <StyledBgColor className="card-header">
             <div className="card-title h5">{this.data.joke}</div>
           </StyledBgColor>
-
-          {(this.props.firebaseEnabled) && <CardFooter/>}
-
+          <CardFooter/>
         </div>
       </article>
     )

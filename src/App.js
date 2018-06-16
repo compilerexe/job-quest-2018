@@ -2,19 +2,18 @@ import React, { Component } from 'react'
 import actionTypes from './redux/actions'
 import { connect } from 'react-redux'
 import store from './redux/store'
-import database from './Firebase'
+import {dataWithFirebase} from './Firebase'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
-import JokeActions from './components/JokeActions'
 import LazyLoad from 'react-lazyload'
 import Footer from './components/Footer.jsx'
 
-const axios = require('axios')
-
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
-const firebaseEnabled = false // Change to false if your don't want this feature.
+const firebaseEnabled = true // Change to false if your don't want this feature.
 /* ============================================== */
+
+const axios = require('axios')
 
 class App extends Component {
 
@@ -56,82 +55,7 @@ class App extends Component {
     })
   }
 
-  dataWithFirebase () {
-    this.asyncAPI().then(response => {
 
-      (this.jokes.length > 0) && store.dispatch({type: actionTypes.CLEAR_DATA_JOKES})
-
-      let result = []
-      let icndb = response.data.value
-
-      icndb.forEach(d => {
-        let joke_id = d.id
-        let refIP = database.ref(`/job-quest-2018/logs/${this.ip}/${joke_id}`)
-        let refJoke = database.ref(`/job-quest-2018/jokes/${joke_id}`)
-
-        let data = {
-          joke_id: joke_id,
-          joke: d.joke,
-          refIP: refIP,
-          refJoke: refJoke,
-          like: 0,
-          dislike: 0,
-          log: {
-            like: false,
-            dislike: false
-          }
-        }
-
-        /* >>>>>>>>> init log */
-        let initLog = false
-        refIP.once('value', snapshot => {
-          if (snapshot.val() === null) {
-            initLog = true
-          } else {
-            data.log = {
-              like: snapshot.val().like,
-              dislike: snapshot.val().dislike
-            }
-          }
-        }).then(() => {
-          if (initLog) {
-            refIP.set({
-              joke_id: joke_id,
-              like: 0,
-              dislike: 0
-            })
-            refJoke.set({
-              joke_id: joke_id,
-              like: 0,
-              dislike: 0
-            })
-          } else {
-            refJoke.once('value', snapshot => {
-              data = {
-                ...data,
-                like: snapshot.val().like,
-                dislike: snapshot.val().dislike
-              }
-            })
-          }
-
-        })
-        /* >>>>>>>>> end init log */
-
-        result.push(
-          <LazyLoad key={joke_id} height={100}>
-            <JokeActions data={data}/>
-          </LazyLoad>
-        )
-      })
-
-      store.dispatch({
-        type: actionTypes.SET_RESULT_JOKES,
-        data: result
-      })
-
-    })
-  }
 
   onSubmit (e) {
     e.preventDefault()
@@ -144,7 +68,7 @@ class App extends Component {
     })
 
     if (firebaseEnabled) {
-      this.dataWithFirebase()
+      dataWithFirebase()
     } else {
       this.dataOnly()
     }
@@ -169,7 +93,7 @@ class App extends Component {
             ip: (response.data.ip).replace(/[.:]/g, '-')
           }
         })
-        this.dataWithFirebase()
+        dataWithFirebase()
       }).catch(function (err) {
         console.log(err)
         return err
