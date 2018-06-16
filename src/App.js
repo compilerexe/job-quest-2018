@@ -71,10 +71,12 @@ class App extends Component {
         }).then(() => {
           if (initLog) {
             refIP.set({
+              joke_id: joke_id,
               like: 0,
               dislike: 0
             })
             refJoke.set({
+              joke_id: joke_id,
               like: 0,
               dislike: 0
             })
