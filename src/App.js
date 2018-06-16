@@ -5,6 +5,7 @@ import store from './redux/store'
 import database from './Firebase'
 import Navbar from './components/Navbar.jsx'
 import Joke from './components/Joke'
+import JokeActions from './components/JokeActions'
 import LazyLoad from 'react-lazyload'
 import Footer from './components/Footer.jsx'
 
@@ -12,7 +13,7 @@ const axios = require('axios')
 
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
-const firebaseEnabled = true // Change to false if your don't want this feature.
+const firebaseEnabled = false // Change to false if your don't want this feature.
 /* ============================================== */
 
 class App extends Component {
@@ -27,25 +28,49 @@ class App extends Component {
   }
 
   async asyncAPI () {
-    const res = await axios(`https://api.icndb.com/jokes/random/${this.resultJokes}?firstName=${this.firstName}&lastName=${this.lastName}`)
+    const res = await axios.get(`https://api.icndb.com/jokes/random/${this.resultJokes}?firstName=${this.firstName}&lastName=${this.lastName}`)
     return await res
   }
 
-  fetchData () {
+  dataOnly () {
+    this.asyncAPI().then(response => {
+      (this.jokes.length > 0) && store.dispatch({type: actionTypes.CLEAR_DATA_JOKES})
+      let result = []
+      let icndb = response.data.value
+      icndb.forEach(d => {
+        let joke_id = d.id
+        let data = {
+          joke_id: joke_id,
+          joke: d.joke
+        }
+        result.push(
+          <LazyLoad key={joke_id} height={100}>
+            <Joke data={data}/>
+          </LazyLoad>
+        )
+      })
+      store.dispatch({
+        type: actionTypes.SET_RESULT_JOKES,
+        data: result
+      })
+    })
+  }
+
+  dataWithFirebase () {
     this.asyncAPI().then(response => {
 
       (this.jokes.length > 0) && store.dispatch({type: actionTypes.CLEAR_DATA_JOKES})
 
       let result = []
-      let v = response.data.value
+      let icndb = response.data.value
 
-      v.forEach(d => {
+      icndb.forEach(d => {
         let joke_id = d.id
         let refIP = database.ref(`/job-quest-2018/logs/${this.ip}/${joke_id}`)
         let refJoke = database.ref(`/job-quest-2018/jokes/${joke_id}`)
 
         let data = {
-          joke_id: d.id,
+          joke_id: joke_id,
           joke: d.joke,
           refIP: refIP,
           refJoke: refJoke,
@@ -95,13 +120,13 @@ class App extends Component {
 
         result.push(
           <LazyLoad key={joke_id} height={100}>
-            <Joke data={data} firebaseEnabled={firebaseEnabled}/>
+            <JokeActions data={data}/>
           </LazyLoad>
         )
       })
 
       store.dispatch({
-        type: actionTypes.GET_DATA_JOKES,
+        type: actionTypes.SET_RESULT_JOKES,
         data: result
       })
 
@@ -117,7 +142,12 @@ class App extends Component {
         lastName: this.lastName
       }
     })
-    this.fetchData()
+
+    if (firebaseEnabled) {
+      this.dataWithFirebase()
+    } else {
+      this.dataOnly()
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -139,13 +169,13 @@ class App extends Component {
             ip: (response.data.ip).replace(/[.:]/g, '-')
           }
         })
-        this.fetchData()
+        this.dataWithFirebase()
       }).catch(function (err) {
         console.log(err)
         return err
       })
     } else {
-      this.fetchData()
+      this.dataOnly()
     }
   }
 

@@ -25,7 +25,7 @@ export default (state = initState, action) => {
     case actionTypes.SET_NAME :
       return state = {...state, ...action.data }
     case actionTypes.SET_RESULT_JOKES :
-      return state = {...state, ...action.data }
+      return state = {...state, jokes: action.data }
     case actionTypes.GET_IP :
       return state.ip
     case actionTypes.SET_IP :
