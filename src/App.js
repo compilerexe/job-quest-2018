@@ -3,14 +3,14 @@ import actionTypes from './redux/actions'
 import { connect } from 'react-redux'
 import store from './redux/store'
 import {dataWithFirebase} from './Firebase'
-import Navbar from './components/Navbar.jsx'
+import Navbar from './components/Navbar.js'
 import Joke from './components/Joke'
 import LazyLoad from 'react-lazyload'
-import Footer from './components/Footer.jsx'
+import Footer from './components/Footer.js'
 
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
-const firebaseEnabled = true // Change to false if your don't want this feature.
+const firebaseEnabled = false // Change to false if your don't want this feature.
 /* ============================================== */
 
 const axios = require('axios')
@@ -54,8 +54,6 @@ class App extends Component {
       })
     })
   }
-
-
 
   onSubmit (e) {
     e.preventDefault()
