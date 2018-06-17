@@ -10,7 +10,7 @@ import Footer from './components/Footer.js'
 
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
-const firebaseEnabled = false // Change to false if your don't want this feature.
+const firebaseEnabled = true // Change to false if your don't want this feature.
 /* ============================================== */
 
 const axios = require('axios')
