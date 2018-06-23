@@ -60,11 +60,7 @@ class App extends Component {
     e.preventDefault();
     store.dispatch({
       type: actionTypes.SET_CONFIG,
-      data: {
-        firstName: this.data.firstName,
-        lastName: this.data.lastName,
-        resultJokes: this.data.resultJokes,
-      },
+      data: { ...this.data },
     });
 
     if (firebaseEnabled) {
