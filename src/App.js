@@ -10,7 +10,7 @@ import Footer from './components/Footer.js';
 
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
-const firebaseEnabled = true; // Change to false if your don't want this feature.
+const firebaseEnabled = false; // Change to false if your don't want this feature.
 /* ============================================== */
 
 const axios = require('axios');
@@ -18,13 +18,17 @@ const axios = require('axios');
 class App extends Component {
   constructor(props) {
     super(props);
-    this.firstName = null;
-    this.lastName = null;
-    this.resultJokes = null;
+
+    this.data = { // use default value from store
+      firstName: props.firstName,
+      lastName: props.lastName,
+      resultJokes: props.resultJokes,
+    };
   }
 
   async asyncAPI() {
-    const res = await axios.get(`https://api.icndb.com/jokes/random/${this.props.resultJokes}?firstName=${this.props.firstName}&lastName=${this.props.lastName}`);
+    const { firstName, lastName, resultJokes } = this.data;
+    const res = await axios.get(`https://api.icndb.com/jokes/random/${resultJokes}?firstName=${firstName}&lastName=${lastName}`);
     return await res;
   }
 
@@ -57,9 +61,9 @@ class App extends Component {
     store.dispatch({
       type: actionTypes.SET_CONFIG,
       data: {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        resultJokes: this.resultJokes,
+        firstName: this.data.firstName,
+        lastName: this.data.lastName,
+        resultJokes: this.data.resultJokes,
       },
     });
 
@@ -120,7 +124,7 @@ First name
                 id="first-name"
                 placeholder="First name"
                 defaultValue={this.props.firstName}
-                onChange={e => this.firstName = e.target.value}
+                onChange={e => this.data.firstName = e.target.value}
               />
             </div>
           </div>
@@ -135,7 +139,7 @@ Last name
                 id="last-name"
                 placeholder="Last name"
                 defaultValue={this.props.lastName}
-                onChange={e => this.lastName = e.target.value}
+                onChange={e => this.data.lastName = e.target.value}
               />
             </div>
           </div>
@@ -148,7 +152,7 @@ Result
                 className="form-select"
                 id="result-jokes"
                 defaultValue={this.props.resultJokes}
-                onChange={e => this.resultJokes = e.target.value}
+                onChange={e => this.data.resultJokes = e.target.value}
               >
                 <option value="50">
 50 ~ jokes
