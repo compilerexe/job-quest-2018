@@ -74,16 +74,6 @@ class App extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // if (nextProps.jokes.length !== this.props.jokes.length) {
-    //   this.props.jokes = nextProps.jokes;
-    // }
-
-    // if (nextProps.ip !== this.props.ip) {
-    //   this.props.ip = nextProps.ip;
-    // }
-  }
-
   componentWillMount() {
     if (firebaseEnabled) {
       axios.get('https://jsonip.com').then((response) => {
