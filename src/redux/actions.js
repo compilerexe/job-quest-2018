@@ -3,10 +3,10 @@ const actionTypes = {
   GET_LAST_NAME: 'GET_LAST_NAME',
   GET_DATA_JOKES: 'GET_DATA_JOKES',
   CLEAR_DATA_JOKES: 'CLEAR_DATA_JOKES',
-  SET_NAME: 'SET_NAME',
+  SET_CONFIG: 'SET_CONFIG',
   SET_RESULT_JOKES: 'SET_RESULT_JOKES',
   GET_IP: 'GET_IP',
-  SET_IP: 'SET_IP'
-}
+  SET_IP: 'SET_IP',
+};
 
-export default actionTypes
+export default actionTypes;
