@@ -1,7 +1,7 @@
 import React from 'react';
 import LazyLoad from 'react-lazyload';
 import actionTypes from './redux/actions';
-import JokeActions from './components/JokeActions';
+import JokeActions from './components/JokeActions.jsx';
 import store from './redux/store';
 
 const axios = require('axios');
@@ -19,7 +19,7 @@ const app = firebase.initializeApp({
 
 const database = app.database();
 
-const dataWithFirebase = () => {
+export default () => {
   const storeData = store.getState();
 
   axios.get(`https://api.icndb.com/jokes/random/${storeData.resultJokes}?firstName=${storeData.firstName}&lastName=${storeData.lastName}`).then((response) => {
@@ -94,5 +94,3 @@ const dataWithFirebase = () => {
     });
   });
 };
-
-export default dataWithFirebase;

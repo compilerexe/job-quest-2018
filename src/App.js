@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 import actionTypes from './redux/actions';
 import store from './redux/store';
-import dataWithFirebase from './Firebase';
-import Navbar from './components/Navbar.js';
-import Joke from './components/Joke';
-import Footer from './components/Footer.js';
+import dataWithFirebase from './Firebase.jsx';
+import Navbar from './components/Navbar.jsx';
+import Joke from './components/Joke.jsx';
+import Footer from './components/Footer.jsx';
 
 /* =====  Firebase Realtime Database Config ===== */
 // Change your firebase initializeApp in Firebase.js file.
@@ -38,13 +38,13 @@ class App extends Component {
       const result = [];
       const icndb = response.data.value;
       icndb.forEach((d) => {
-        const joke_id = d.id;
+        const jokeId = d.id;
         const data = {
-          joke_id,
+          jokeId,
           joke: d.joke,
         };
         result.push(
-          <LazyLoad key={joke_id} height={100}>
+          <LazyLoad key={jokeId} height={100}>
             <Joke data={data} />
           </LazyLoad>,
         );
