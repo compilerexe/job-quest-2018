@@ -29,12 +29,12 @@ const dataWithFirebase = () => {
     const icndb = response.data.value;
 
     icndb.forEach((d) => {
-      const joke_id = d.id;
-      const refIP = database.ref(`/job-quest-2018/logs/${storeData.ip}/${joke_id}`);
-      const refJoke = database.ref(`/job-quest-2018/jokes/${joke_id}`);
+      const jokeId = d.id;
+      const refIP = database.ref(`/job-quest-2018/logs/${storeData.ip}/${jokeId}`);
+      const refJoke = database.ref(`/job-quest-2018/jokes/${jokeId}`);
 
       let data = {
-        joke_id,
+        jokeId,
         joke: d.joke,
         refIP,
         refJoke,
@@ -60,12 +60,12 @@ const dataWithFirebase = () => {
       }).then(() => {
         if (initLog) {
           refIP.set({
-            joke_id,
+            jokeId,
             like: 0,
             dislike: 0,
           });
           refJoke.set({
-            joke_id,
+            jokeId,
             like: 0,
             dislike: 0,
           });
@@ -82,7 +82,7 @@ const dataWithFirebase = () => {
       /* >>>>>>>>> end init log */
 
       result.push(
-        <LazyLoad key={joke_id} height={100}>
+        <LazyLoad key={jokeId} height={100}>
           <JokeActions data={data} />
         </LazyLoad>,
       );
@@ -95,4 +95,4 @@ const dataWithFirebase = () => {
   });
 };
 
-export { dataWithFirebase };
+export default dataWithFirebase;

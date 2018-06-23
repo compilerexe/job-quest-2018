@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 import actionTypes from './redux/actions';
 import store from './redux/store';
-import { dataWithFirebase } from './Firebase';
+import dataWithFirebase from './Firebase';
 import Navbar from './components/Navbar.js';
 import Joke from './components/Joke';
 import Footer from './components/Footer.js';

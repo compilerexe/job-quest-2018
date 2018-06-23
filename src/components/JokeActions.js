@@ -1,10 +1,25 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+const StyledBgColor = styled.div`
+      background: linear-gradient(to right, #b4d0fd, #c2e9fb);
+      box-shadow: 4px 4px #888888;
+    `;
+
 export default class JokeActions extends Component {
   constructor(props) {
     super(props);
     this.data = props.data;
+  }
+
+  componentDidMount() {
+    console.log(`componentDidMount >>>> ${this.data.jokeId}`);
+  }
+
+  onPressButton(e, action) {
+    e.preventDefault();
+    console.log(`onPresss ${this.data.jokeId}`);
+    this.firebaseStore(action);
   }
 
   firebaseStore(action) {
@@ -19,12 +34,12 @@ export default class JokeActions extends Component {
       let snapDislike = this.data.dislike;
 
       if (snapLike === 0) {
-        snapLike++;
+        snapLike += 1;
         if (snapDislike > 0) {
-          snapDislike--;
+          snapDislike -= 1;
         }
       } else {
-        snapLike--;
+        snapLike -= 1;
       }
 
       this.data.refJoke.update({ like: snapLike, dislike: snapDislike });
@@ -35,12 +50,12 @@ export default class JokeActions extends Component {
       let snapDislike = this.data.dislike;
 
       if (snapDislike === 0) {
-        snapDislike++;
+        snapDislike += 1;
         if (snapLike > 0) {
-          snapLike--;
+          snapLike -= 1;
         }
       } else {
-        snapDislike--;
+        snapDislike -= 1;
       }
 
       this.data.refJoke.update({ dislike: snapDislike, like: snapLike });
@@ -49,64 +64,43 @@ export default class JokeActions extends Component {
     }
   }
 
-  onPressButton(e, action) {
-    e.preventDefault();
-    console.log(`onPresss ${this.data.joke_id}`);
-    this.firebaseStore(action);
-  }
-
-  componentDidMount() {
-    console.log(`componentDidMount >>>> ${this.data.joke_id}`);
-  }
-
   render() {
     const styles = {
       column: { marginTop: '20px' },
       btnLike: { marginRight: '10px' },
     };
 
-    const CardFooter = () => (
-      <StyledBgColor className="card-footer">
-        <button
-          type="button"
-          className="btn btn-success"
-          style={styles.btnLike}
-          onClick={e => this.onPressButton(e, 'like')}
-        >
-          <i className="icon icon-emoji" />
-          {' '}
-          {this.data.like}
-        </button>
-        <button
-          type="button"
-          className="btn btn-error"
-          onClick={e => this.onPressButton(e, 'dislike')}
-        >
-          <i className="icon icon-flag" />
-&nbsp;
-          {this.data.dislike}
-        </button>
-      </StyledBgColor>
-    );
-
-    const JokeActions = () => (
+    return (
       <article className="form-group" style={styles.column}>
         <div className="card">
           <StyledBgColor className="card-header">
             <div className="card-title h5">
               {this.data.joke}
             </div>
+            <div style={{ marginTop: '10px' }}>
+              <button
+                type="button"
+                className="btn btn-success"
+                style={styles.btnLike}
+                onClick={e => this.onPressButton(e, 'like')}
+              >
+                <i className="icon icon-emoji" />
+                {' '}
+                {this.data.like}
+              </button>
+              <button
+                type="button"
+                className="btn btn-error"
+                onClick={e => this.onPressButton(e, 'dislike')}
+              >
+                <i className="icon icon-flag" />
+&nbsp;
+                {this.data.dislike}
+              </button>
+            </div>
           </StyledBgColor>
-          <CardFooter />
         </div>
       </article>
     );
-
-    const StyledBgColor = styled.div`
-      background: linear-gradient(to right, #b4d0fd, #c2e9fb);
-      box-shadow: 4px 4px #888888;
-    `;
-
-    return <JokeActions />;
   }
 }
